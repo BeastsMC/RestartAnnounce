@@ -1,0 +1,15 @@
+name: RestartAnnounce
+main: com.BeastsMC.RestartAnnounce
+author: TheBeast808
+version: 1.0
+commands:
+   sr:
+      description: Schedule a restart
+      usage: /sr [seconds]
+      permission: restartannounce.admin
+      permission-message: You do not have permission to use this command!
+   cancelrestart:
+      description: Cancel a restart
+      usage: /cancelrestart
+      permission: restartannounce.admin
+      permission-message: You do not have permission to use this command!
