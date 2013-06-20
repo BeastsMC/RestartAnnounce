@@ -45,7 +45,7 @@ public class RestartAnnounce extends JavaPlugin {
 				restart = new ScheduledRestart(this, seconds);
 				restartScheduled = true;
 				log.info("Scheduled restart to occur in " + seconds + " seconds");
-				sender.sendMessage(ChatColor.BLUE + "Scheduled restart to occur in " + seconds + " seconds");
+				getServer().broadcastMessage(ChatColor.BLUE + "A restas has been scheduled to occur in " + seconds + " seconds");
 				return true;
 			}
 			return false;
