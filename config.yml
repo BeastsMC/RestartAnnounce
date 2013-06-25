@@ -1,0 +1,5 @@
+#interval is how often the server should restart
+#The last digit can be either s, m, or h (seconds, minutes, hours)
+restart:
+    enableInterval: false
+    interval: 12h

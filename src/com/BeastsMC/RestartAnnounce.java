@@ -1,52 +1,83 @@
 package com.BeastsMC;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RestartAnnounce extends JavaPlugin {
 	public Logger log;
 	public boolean restartScheduled = false;
 	public ScheduledRestart restart = null;
+	public IntervalRestart intervalRestart = null;
 	public void onEnable() {
 		log = this.getLogger();
 		getServer().getPluginManager().registerEvents(new RALoginListener(this), this);
 		getCommand("sr").setExecutor(this);
 		getCommand("cancelrestart").setExecutor(this);
+		saveDefaultConfig();
+		loadConfig();
 	}
 	public boolean onCommand(CommandSender sender, Command command, String cmd, String[] args) {
 		if(cmd.equalsIgnoreCase("cancelrestart")) {
-			if(restartScheduled) {
-				cancelRestart();
-				restartScheduled = false;
-				log.info("Cancelled the scheduled restart");
-				sender.sendMessage(ChatColor.BLUE + "Cancelled the scheduled restart");
-				return true;
+			if(sender.hasPermission("restartannounce.admin")) {
+				if(restartScheduled) {
+					cancelRestart();
+					restartScheduled = false;
+					log.info("Cancelled the scheduled restart");
+					sender.sendMessage(ChatColor.BLUE + "Cancelled the scheduled restart");
+					return true;
+				} else {
+					sender.sendMessage(ChatColor.RED + "No server restart scheduled");
+					return true;
+				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "No server restart scheduled");
+				sender.sendMessage("You do not have permission to use this command!");
 				return true;
 			}
 		} else {
-			if(restartScheduled) {
-				sender.sendMessage(ChatColor.RED + "Server restart already scheduled");
-				return true;
-			}
 			if(args.length > 0) {
-				Integer seconds;
-				try {
-					seconds = Integer.parseInt(args[0]);
-				} catch(NumberFormatException e) {
-					sender.sendMessage(ChatColor.RED + "'"  + args[0] +"' is not a number.");
-					return false;
+				if(args[0].equalsIgnoreCase("reload")) {
+					if(sender.hasPermission("restartannounce.reload")) {
+						sender.sendMessage(ChatColor.AQUA + "Reloading...");
+						reload();
+						sender.sendMessage(ChatColor.AQUA + "Done reloading!");
+						return true;
+					} else {
+						sender.sendMessage("You do not have permission to use this command!");
+						return true;
+					}
+
+				} else {
+					if(sender.hasPermission("restartannounce.admin")) {
+						if(restartScheduled) {
+							sender.sendMessage(ChatColor.RED + "Server restart already scheduled");
+							return true;
+						}
+						Integer seconds;
+						try {
+							seconds = Integer.parseInt(args[0]);
+						} catch(NumberFormatException e) {
+							sender.sendMessage(ChatColor.RED + "'"  + args[0] +"' is not a number.");
+							return false;
+						}
+						restart = new ScheduledRestart(this, seconds);
+						restartScheduled = true;
+						log.info("Scheduled restart to occur in " + seconds + " seconds");
+						getServer().broadcastMessage(ChatColor.BLUE + "A restart has been scheduled to occur in " + seconds + " seconds");
+						return true;
+					} else {
+						sender.sendMessage("You do not have permission to use this command!");
+						return true;
+					}
 				}
-				restart = new ScheduledRestart(this, seconds);
-				restartScheduled = true;
-				log.info("Scheduled restart to occur in " + seconds + " seconds");
-				getServer().broadcastMessage(ChatColor.BLUE + "A restart has been scheduled to occur in " + seconds + " seconds");
-				return true;
 			}
 			return false;
 		}
@@ -54,6 +85,45 @@ public class RestartAnnounce extends JavaPlugin {
 	private void cancelRestart() {
 		restart.destroy();
 		restart = null;
+	}
+	private void loadConfig() {
+		FileConfiguration fConf = getConfig();
+		try {
+			fConf.load(new File(getDataFolder(), "config.yml"));
+			if(fConf.getBoolean("restart.enableInterval")) {
+				String rawInterval = fConf.getString("restart.interval");
+				String unit = rawInterval.substring(rawInterval.length() - 1);
+				Integer rawIntervalValue = Integer.parseInt(rawInterval.substring(0, rawInterval.length() - 1));
+				Integer intervalSeconds;
+				if(unit.equalsIgnoreCase("s")) {
+					intervalSeconds = rawIntervalValue;
+				} else if(unit.equalsIgnoreCase("m")) {
+					intervalSeconds = rawIntervalValue*60;
+				} else if(unit.equalsIgnoreCase("h")) {
+					intervalSeconds = rawIntervalValue*3600;
+				} else {
+					log.warning("Unit for interval is invalid: " + unit);
+					return;
+				}
+				intervalRestart = new IntervalRestart(this, intervalSeconds); 
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+	private void reload() {
+		if(intervalRestart!=null) {
+			intervalRestart.cancel();
+		}
+		if(restartScheduled==true) {
+			restart.destroy();
+			restartScheduled = false;
+		}
+		loadConfig();
 	}
 
 }
