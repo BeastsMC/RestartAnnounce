@@ -33,15 +33,13 @@ public class RestartAnnounce extends JavaPlugin {
 					restartScheduled = false;
 					log.info("Cancelled the scheduled restart");
 					sender.sendMessage(ChatColor.BLUE + "Cancelled the scheduled restart");
-					return true;
 				} else {
 					sender.sendMessage(ChatColor.RED + "No server restart scheduled");
-					return true;
 				}
 			} else {
 				sender.sendMessage("You do not have permission to use this command!");
-				return true;
 			}
+			return true;
 		} else {
 			if(args.length > 0) {
 				if(args[0].equalsIgnoreCase("reload")) {
@@ -56,12 +54,16 @@ public class RestartAnnounce extends JavaPlugin {
 					}
 
 				} else if(args[0].equalsIgnoreCase("time")) {
-					if(intervalRestart!=null) {
-						sender.sendMessage(ChatColor.AQUA + "Time until restart: " + intervalRestart.getFormatedTime());
-					} else if(restart!=null) {
-						sender.sendMessage(ChatColor.AQUA + "Time until restart: " + restart.getFormatedTime());
+					if(sender.hasPermission("restartannounce.time")) {
+						if(intervalRestart!=null) {
+							sender.sendMessage(ChatColor.AQUA + "Time until restart: " + intervalRestart.getFormatedTime());
+						} else if(restart!=null) {
+							sender.sendMessage(ChatColor.AQUA + "Time until restart: " + restart.getFormatedTime());
+						} else {
+							sender.sendMessage(ChatColor.AQUA + "There is currently no planned restarts.");
+						}
 					} else {
-						sender.sendMessage(ChatColor.AQUA + "There is currently no planned restarts.");
+						sender.sendMessage("You do not have permission to use this command!");
 					}
 					return true;
 				} else {
