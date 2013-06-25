@@ -4,8 +4,8 @@ author: TheBeast808
 version: 1.0
 commands:
    sr:
-      description: Schedule a restart
-      usage: /sr [seconds]
+      description: Base RestartAnnounce command
+      usage: /sr [time | reload | <seconds>] 
       permission-message: You do not have permission to use this command!
    cancelrestart:
       description: Cancel a restart
