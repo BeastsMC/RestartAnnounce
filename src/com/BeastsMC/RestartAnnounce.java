@@ -55,6 +55,15 @@ public class RestartAnnounce extends JavaPlugin {
 						return true;
 					}
 
+				} else if(args[0].equalsIgnoreCase("time")) {
+					if(intervalRestart!=null) {
+						sender.sendMessage(ChatColor.AQUA + "Time until restart: " + intervalRestart.getFormatedTime());
+					} else if(restart!=null) {
+						sender.sendMessage(ChatColor.AQUA + "Time until restart: " + restart.getFormatedTime());
+					} else {
+						sender.sendMessage(ChatColor.AQUA + "There is currently no planned restarts.");
+					}
+					return true;
 				} else {
 					if(sender.hasPermission("restartannounce.admin")) {
 						if(restartScheduled) {

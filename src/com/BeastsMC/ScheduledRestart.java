@@ -66,4 +66,13 @@ public class ScheduledRestart extends BukkitRunnable {
 	public Scoreboard getScoreboard() {
 		return board;
 	}
+	public String getFormatedTime() {
+		if(secondsUntilRestart<60) {
+			return secondsUntilRestart + " seconds";
+		} else if(secondsUntilRestart<3600) {
+			return (double)Math.round(secondsUntilRestart/60.0 * 100) / 100 + " minutes";
+		} else {
+			return (double)Math.round(secondsUntilRestart/3600.0 * 100) / 100 + " hours";
+		}
+	}
 }
