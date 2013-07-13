@@ -3,3 +3,7 @@
 restart:
     enableInterval: false
     interval: 12h
+    #Commands listed here will be executed through console sequentially during shutdown
+    commands:
+    - 'save-all'
+config-version: 1

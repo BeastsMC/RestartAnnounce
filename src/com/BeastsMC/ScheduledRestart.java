@@ -34,6 +34,10 @@ public class ScheduledRestart extends BukkitRunnable {
 	public void run() {
 		secondsUntilRestart--;
 		if(secondsUntilRestart==0) {
+			plugin.log.info("Executing shutdown commands");
+			for(String command : plugin.shutdownCommands) {
+				plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
+			}
 			plugin.log.info("Running shut down");
 			Bukkit.shutdown();
 			this.cancel();

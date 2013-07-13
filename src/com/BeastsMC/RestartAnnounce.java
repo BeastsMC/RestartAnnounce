@@ -3,6 +3,8 @@ package com.BeastsMC;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -17,6 +19,7 @@ public class RestartAnnounce extends JavaPlugin {
 	public boolean restartScheduled = false;
 	public ScheduledRestart restart = null;
 	public IntervalRestart intervalRestart = null;
+	public List<String> shutdownCommands = new ArrayList<String>();
 	public void onEnable() {
 		log = this.getLogger();
 		getServer().getPluginManager().registerEvents(new RALoginListener(this), this);
@@ -118,6 +121,7 @@ public class RestartAnnounce extends JavaPlugin {
 				}
 				intervalRestart = new IntervalRestart(this, intervalSeconds); 
 			}
+			shutdownCommands = fConf.getStringList("restart.commands");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
