@@ -41,6 +41,11 @@ public class ScheduledRestart extends BukkitRunnable {
 			plugin.log.info("Running shut down");
 			Bukkit.shutdown();
 			this.cancel();
+		} else if(secondsUntilRestart==3) {
+			for(String message : plugin.shutdownMessages) {
+				plugin.getServer().broadcastMessage(message.replace('&', ChatColor.COLOR_CHAR)
+						.replaceAll("%time%", secondsUntilRestart.toString()));
+			}
 		}
 		this.updateDisplays();
 	}

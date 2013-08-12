@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,8 @@ public class RestartAnnounce extends JavaPlugin {
 	public ScheduledRestart restart = null;
 	public IntervalRestart intervalRestart = null;
 	public List<String> shutdownCommands = new ArrayList<String>();
+	public List<String> scheduleMessages = new ArrayList<String>();
+	public List<String> shutdownMessages = new ArrayList<String>();
 	public void onEnable() {
 		log = this.getLogger();
 		getServer().getPluginManager().registerEvents(new RALoginListener(this), this);
@@ -85,7 +88,9 @@ public class RestartAnnounce extends JavaPlugin {
 						restart = new ScheduledRestart(this, seconds);
 						restartScheduled = true;
 						log.info("Scheduled restart to occur in " + seconds + " seconds");
-						getServer().broadcastMessage(ChatColor.BLUE + "A restart has been scheduled to occur in " + seconds + " seconds");
+						for(String message: scheduleMessages) {
+							getServer().broadcastMessage(message.replace('&', ChatColor.COLOR_CHAR).replaceAll("%time%", seconds.toString()));
+						}
 						return true;
 					} else {
 						sender.sendMessage("You do not have permission to use this command!");
@@ -104,6 +109,13 @@ public class RestartAnnounce extends JavaPlugin {
 		FileConfiguration fConf = getConfig();
 		try {
 			fConf.load(new File(getDataFolder(), "config.yml"));
+			if(fConf.getInt("config-version")<2) {
+				Configuration newConf = fConf.getDefaults();
+				fConf.set("broadcast-on-schedule", newConf.getList("broadcast-on-schedule"));
+				fConf.set("broadcast-before-shutdown", newConf.getList("broadcast-before-shutdown"));
+				fConf.set("config-version", 2);
+				fConf.save(new File(getDataFolder(), "config.yml"));
+			}
 			if(fConf.getBoolean("restart.enableInterval")) {
 				String rawInterval = fConf.getString("restart.interval");
 				String unit = rawInterval.substring(rawInterval.length() - 1);
@@ -122,6 +134,8 @@ public class RestartAnnounce extends JavaPlugin {
 				intervalRestart = new IntervalRestart(this, intervalSeconds); 
 			}
 			shutdownCommands = fConf.getStringList("restart.commands");
+			scheduleMessages = fConf.getStringList("broadcast-on-schedule");
+			shutdownMessages = fConf.getStringList("broadcast-before-shutdown");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -6,4 +6,13 @@ restart:
     #Commands listed here will be executed through console sequentially during shutdown
     commands:
     - 'save-all'
+#Broadcasted to server when somebody schedules a restart to occur
+broadcast-on-schedule:
+    - '&bThe server has been scheduled to restart in %time% seconds'
+    - '&bIt should be back up shortly afterwards, sorry for the inconvenience'
+
+#Messages to broadcast a few seconds before shut down
+broadcast-before-shutdown:
+    - '&4Server is shutting down!'
+    - '&4See you soon!'
 config-version: 1
