@@ -1,7 +1,7 @@
 name: RestartAnnounce
+authors: [TheBeast808, PureSpider]
+version: ${project.version}
 main: com.BeastsMC.RestartAnnounce
-author: TheBeast808
-version: 1.5
 commands:
    sr:
       description: Base RestartAnnounce command
