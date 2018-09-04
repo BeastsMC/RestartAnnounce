@@ -2,7 +2,6 @@ package com.BeastsMC;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -51,21 +50,17 @@ public class ScheduledRestart extends BukkitRunnable {
     }
 
     private void updateDisplays() {
-        OfflinePlayer restartLine;
         Score score;
         if (secondsUntilRestart == 59) {
-            restartLine = Bukkit.getOfflinePlayer(ChatColor.RED + "Minutes:");
-            board.resetScores(restartLine);
+            board.resetScores(ChatColor.RED + "Minutes:");
         }
         if (secondsUntilRestart > 59) {
-            restartLine = Bukkit.getOfflinePlayer(ChatColor.RED + "Minutes:");
             Integer minutesToRestart = secondsUntilRestart / 60;
-            score = objective.getScore(restartLine);
+            score = objective.getScore(ChatColor.RED + "Minutes:");
             score.setScore(minutesToRestart);
 
         } else {
-            restartLine = Bukkit.getOfflinePlayer(ChatColor.RED + "Seconds:");
-            score = objective.getScore(restartLine);
+            score = objective.getScore(ChatColor.RED + "Seconds:");
             score.setScore(secondsUntilRestart);
         }
     }
